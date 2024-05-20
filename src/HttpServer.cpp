@@ -75,7 +75,7 @@ void CALLBACK clientThread(
     CloseThreadpoolWork(work);
     WaitForSingleObject(serv->getMutexConsole(),INFINITE);
     std::cout << "Disconnect " << "ip: " << inet_ntoa(client_ip)
-    << " socket: " << std::to_string(client_socket) 
+    << " Socket: " << std::to_string(client_socket) 
     << " Date:" << HttpDate::getCurGmtTime().toStr() << std::endl;
     ReleaseMutex(serv->getMutexConsole());
     std::wstring post_log = L"Disconnect " + fromUTF8(inet_ntoa(client_ip));
@@ -193,6 +193,10 @@ void HTTPServer::work(SOCKET s,std::shared_ptr<HTTPrequest> req,in_addr ip)
     std::wstring local_path = urldecode(req->Header().Url().PathStr().operator*());
     std::wstring abs_path = current_proj_path + local_path;
     std::string postfix = FilePostfix(local_path);
+    if(!(req->Header().Version() == "HTTP/1.1" || req->Header().Version() == "HTTP/1.0")){
+        response = *makeErrorResponse(505,"HTTP Version Not Supported");
+        goto end;
+    }
     if(!settings.isMethodAccess(local_path,req->Header().Method(),inet_ntoa(ip))){
         response = *makeErrorResponse(403,"Forbidden");
         goto end;
@@ -576,15 +580,17 @@ bool HTTPServer::isFileExist(const std::wstring &path)const
 }
 
 void HTTPServer::exec(){
+    std::cout << "Server started\n";
     SOCKET new_socket = INVALID_SOCKET;
     sockaddr_in new_addr{0};
     int addr_size = sizeof(new_addr);
     while(true){
+        std::cout << "Listen...\n";
         new_socket = accept(server_socket,(sockaddr*)&new_addr,&addr_size);
         if(new_socket == INVALID_SOCKET)
             continue;
         std::cout << "Connect " << "ip: " << inet_ntoa(new_addr.sin_addr)
-        << " socket: " << std::to_string(new_socket) 
+        << " Socket: " << std::to_string(new_socket) 
         << " Date:" << HttpDate::getCurGmtTime().toStr() << std::endl;
         std::wstring post_log = L"Connect " + fromUTF8(inet_ntoa(new_addr.sin_addr)) + L"\n";
         this->WriteTolog(post_log);

@@ -4,6 +4,7 @@
 
 
 int main(){
+    SetConsoleOutputCP(65001);
     HTTPServer* p_serv = nullptr;
     try{
         ServerSettings settings(L"mimetypes.txt",L"access.txt",L"settings.txt");
