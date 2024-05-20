@@ -1,0 +1,88 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "g++ build debug project for windows",
+            "command": "g++.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-ggdb",
+                "-Wall",
+                "-DUNICODE",
+                "-o",
+                "${workspaceFolder}\\build\\HttpServer.exe",
+                "${workspaceFolder}\\src\\main.cpp",
+                "${workspaceFolder}\\src\\HttpServer.cpp",
+                "${workspaceFolder}\\src\\ServerSettings.cpp",
+                "${workspaceFolder}\\src\\HttpDate.cpp",
+                "-L${workspaceFolder}\\lib",
+                "-lhttp",
+                "-lWs2_32"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "build lib",
+            "command": "g++.exe",
+            "args": [
+                "-std=c++14",
+                "-c",
+                "${workspaceFolder}\\src\\HTTPrequest.cpp",
+                "${workspaceFolder}\\src\\HTTPresponse.cpp",
+                "${workspaceFolder}\\src\\URL.cpp",
+                "${workspaceFolder}\\src\\OtherFunction.cpp;",
+                "ar",
+                "rc",
+                "${workspaceFolder}\\lib\\http.lib",
+                "${workspaceFolder}\\HTTPrequest.o",
+                "${workspaceFolder}\\HTTPresponse.o",
+                "${workspaceFolder}\\URL.o",
+                "${workspaceFolder}\\OtherFunction.o;",
+                "ranlib",
+                "${workspaceFolder}\\lib\\http.lib"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "cppbuild",
+            "label": "g++ build release project for windows",
+            "command": "g++.exe",
+            "args": [
+                "-DUNICODE",
+                "-o",
+                "${workspaceFolder}\\build\\HttpServer.exe",
+                "${workspaceFolder}\\src\\main.cpp",
+                "${workspaceFolder}\\src\\HttpServer.cpp",
+                "${workspaceFolder}\\src\\ServerSettings.cpp",
+                "${workspaceFolder}\\src\\HttpDate.cpp",
+                "-L${workspaceFolder}\\lib",
+                "-lhttp",
+                "-lWs2_32"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+    ],
+    "version": "2.0.0"
+}

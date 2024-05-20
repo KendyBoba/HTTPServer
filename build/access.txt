@@ -1,0 +1,3 @@
+#TARGET METHOD IP PERMISSION(Allow/Deny)
+*.* * * Allow
+#/index.html PUT 127.0.0.1 Deny

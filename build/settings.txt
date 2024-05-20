@@ -1,0 +1,10 @@
+main_dir = projects
+max_threads = 1000
+max_conn = 1000
+max_time_wait_sec = 10
+port = 80
+default_file = index.html
+default_postfix = .dll
+default_handler = main.dll
+#server_ip = 127.0.0.1
+#.py = path/to/interpreter
