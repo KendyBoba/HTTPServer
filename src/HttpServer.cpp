@@ -414,6 +414,7 @@ std::shared_ptr<HTTPresponse> HTTPServer::LoadDll(std::wstring path,std::shared_
     HMODULE dynamic_lib = LoadLibraryW(path.c_str());
     HTTPresponse (*external_logic)(const HTTPrequest& req) = nullptr;
     external_logic = (HTTPresponse (*)(const HTTPrequest& req))GetProcAddress(dynamic_lib,"start"); 
+    CloseHandle(dynamic_lib);
     if(!external_logic){
         return makeErrorResponse(500,"Internal Server Error");
     }
