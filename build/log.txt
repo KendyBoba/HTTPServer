@@ -1,3 +1,0 @@
-Connect 127.0.0.1
-  Wed, 21 May 2024 18:09:29 GMTConnect 127.0.0.1
-  Wed, 21 May 2024 18:09:29 GMTRequest: 127.0.0.1 Method: GET URL: \index.html  Wed, 21 May 2024 18:09:29 GMTRequest: 127.0.0.1 Method: GET URL: \index.htmlResponse: 127.0.0.1 200 OK  Wed, 21 May 2024 18:09:29 GMTRequest: 127.0.0.1 Method: GET URL: \favicon.ico  Wed, 21 May 2024 18:09:29 GMTRequest: 127.0.0.1 Method: GET URL: \favicon.icoResponse: 127.0.0.1 404 Not Found  Wed, 21 May 2024 18:09:29 GMT

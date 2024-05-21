@@ -28,6 +28,8 @@ ServerSettings::ServerSettings(const ServerSettings &settings) : ServerSettings(
     this->port = settings.port;
     this->ip = settings.ip;
     this->default_file = settings.default_file;
+    this->default_postfix = settings.default_postfix;
+    this->default_handler = settings.default_handler;
 }
 
 ServerSettings::ServerSettings(ServerSettings &&settings)
@@ -42,6 +44,8 @@ ServerSettings::ServerSettings(ServerSettings &&settings)
     this->port = settings.port;
     this->ip = settings.ip;
     this->default_file = move(settings.default_file);
+    this->default_postfix = move(settings.default_postfix);
+    this->default_handler = move(settings.default_handler);
 }
 
 ServerSettings &ServerSettings::operator=(const ServerSettings &settings)
@@ -56,6 +60,8 @@ ServerSettings &ServerSettings::operator=(const ServerSettings &settings)
     this->port = settings.port;
     this->ip = settings.ip;
     this->default_file = settings.default_file;
+    this->default_postfix = settings.default_postfix;
+    this->default_handler = settings.default_handler;
     return *this;
 }
 
@@ -71,6 +77,8 @@ ServerSettings &ServerSettings::operator=(ServerSettings &&settings)
     this->port = settings.port;
     this->ip = settings.ip;
     this->default_file = move(settings.default_file);
+    this->default_postfix = move(settings.default_postfix);
+    this->default_handler = move(settings.default_handler);
     return *this;
 }
 
@@ -153,8 +161,9 @@ const std::map<std::string, std::wstring> &ServerSettings::getAssociation() cons
 
 bool ServerSettings::isMethodAccess(const std::wstring &path,METHOD method,const std::string& ip) const
 {
+    const std::string str_method = HTTPrequest::HTTPheader::methodToStr(method);
     auto found = std::find_if(access_resource->begin(),access_resource->end(),[&](const access_info & el)->bool{
-            return (compare(path,el.path) && compare(ip,el.ip) && compare(HTTPrequest::HTTPheader::methodToStr(method),el.method))?true:false;
+            return (compare(path,el.path) && compare(ip,el.ip) && compare(str_method,el.method))?true:false;
     });
     if(found == access_resource->end())
         return false;

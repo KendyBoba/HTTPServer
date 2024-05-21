@@ -201,11 +201,11 @@ void HTTPServer::work(SOCKET s,std::shared_ptr<HTTPrequest> req,in_addr ip)
         response = *makeErrorResponse(403,"Forbidden");
         goto end;
     }
-    if(FilePostfix(local_path).empty() && settings.getDefaultPostfix() == ".dll"){
+    if(postfix.empty() && settings.getDefaultPostfix() == ".dll"){
         abs_path += fromUTF8(settings.getDefaultPostfix());
         response = *LoadDll(abs_path,req);
         goto end;
-    }else if(FilePostfix(local_path).empty() && settings.getDefaultPostfix() != ".dll"){
+    }else if(postfix.empty() && settings.getDefaultPostfix() != ".dll"){
         if(!settings.getAssociation().count(postfix)){
             response = *makeErrorResponse(404,"Not Found");
             goto end;
@@ -213,7 +213,6 @@ void HTTPServer::work(SOCKET s,std::shared_ptr<HTTPrequest> req,in_addr ip)
         response = *ExternalProcess(settings.getAssociation().find(postfix)->second,abs_path,req);
         goto end;
     }else if(postfix == ".dll"){
-        abs_path += fromUTF8(settings.getDefaultPostfix());
         response = *LoadDll(abs_path,req);
         goto end;
     }else if(settings.getAssociation().count(postfix)){
