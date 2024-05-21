@@ -5,7 +5,7 @@
 #include <map>
 #include <memory>
 #include <initializer_list>
-#include "../headers/OtherFunction.h"
+#include "../lib/OtherFunction.h"
 
 class URL{
 private:

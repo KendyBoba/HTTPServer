@@ -1,4 +1,4 @@
-#include "../headers/OtherFunction.h"
+#include "../lib/OtherFunction.h"
 
 std::shared_ptr<std::vector<std::string>> split(
     const std::string &str,
