@@ -193,7 +193,7 @@ void HTTPServer::work(SOCKET s,std::shared_ptr<HTTPrequest> req,in_addr ip)
     std::wstring local_path = urldecode(req->Header().Url().PathStr().operator*());
     std::wstring abs_path = current_proj_path + local_path;
     std::string postfix = FilePostfix(local_path);
-    if(!(req->Header().Version() == "HTTP/1.1" || req->Header().Version() == "HTTP/1.0")){
+    if(!(req->Header().Version() == "1.1" || req->Header().Version() == "1.0")){
         response = *makeErrorResponse(505,"HTTP Version Not Supported");
         goto end;
     }

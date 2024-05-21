@@ -5,7 +5,7 @@
 #include <string>
 #include <ctime> 
 #include <sstream>
-#include "../headers/OtherFunction.h"
+#include "../lib/OtherFunction.h"
 
 class HttpDate{
 public:

@@ -7,7 +7,7 @@
 #include <string>
 #include <algorithm>
 #include "winsock.h"
-#include "OtherFunction.h"
+#include "../lib/OtherFunction.h"
 #include "../lib/HTTPrequest.h"
 
 class ServerSettings{
