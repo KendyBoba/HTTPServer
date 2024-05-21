@@ -451,7 +451,7 @@ std::shared_ptr<HTTPresponse> HTTPServer::ExternalProcess(std::wstring path_to_e
     si.hStdOutput = child_out_wr;
     si.dwFlags |= STARTF_USESTDHANDLES;
     PROCESS_INFORMATION pi{0};
-    if(!CreateProcessW(path_to_exe.c_str(),(wchar_t*)(std::wstring(L" ") + path_file).c_str(),NULL,NULL,TRUE,0,NULL,NULL,&si,&pi)){
+    if(!CreateProcessW(path_to_exe.c_str(),(wchar_t*)(std::wstring(L" ") + path_file + L" "  + fromUTF8(*req->toStr())).c_str(),NULL,NULL,TRUE,0,NULL,NULL,&si,&pi)){
         throw std::runtime_error("proccess not created");
     }
     WaitForSingleObject(pi.hProcess,1000);
