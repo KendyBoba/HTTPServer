@@ -256,7 +256,7 @@ HANDLE HTTPServer::getMutexLog()
 void HTTPServer::WriteTolog(const std::wstring str)
 {
     WaitForSingleObject(this->getMutexLog(),INFINITE);
-    std::string data = toUTF8(str) + " " + HttpDate::getCurGmtTime().toStr();
+    std::string data = toUTF8(str) + " " + HttpDate::getCurGmtTime().toStr() + "\n";
     std::ofstream target_file(path_to_log_file.c_str(),std::ios::binary | std::ios::app);
     if(!target_file.is_open())
         throw std::runtime_error("file was not open");
@@ -413,12 +413,14 @@ std::shared_ptr<HTTPresponse> HTTPServer::LoadDll(std::wstring path,std::shared_
         path = this->current_proj_path + L"\\" + settings.getDefaultHandlerFile();
     HMODULE dynamic_lib = LoadLibraryW(path.c_str());
     HTTPresponse (*external_logic)(HTTPrequest& req) = nullptr;
-    external_logic = (HTTPresponse (*)(HTTPrequest& req))GetProcAddress(dynamic_lib,"start"); 
-    CloseHandle(dynamic_lib);
+    external_logic = (HTTPresponse (*)(HTTPrequest& req))GetProcAddress(dynamic_lib,"start");
     if(!external_logic){
+        FreeLibrary(dynamic_lib);
         return makeErrorResponse(500,"Internal Server Error");
     }
-    return std::make_shared<HTTPresponse>(external_logic(*req));
+    auto response = std::make_shared<HTTPresponse>(external_logic(*req));
+    FreeLibrary(dynamic_lib);
+    return response;
 }
 
 size_t HTTPServer::getFileSize(const std::wstring &w_path)const{
@@ -585,14 +587,18 @@ void HTTPServer::exec(){
     sockaddr_in new_addr{0};
     int addr_size = sizeof(new_addr);
     while(true){
+        WaitForSingleObject(this->getMutexConsole(),INFINITE);
         std::cout << "Listen...\n";
+        ReleaseMutex(this->getMutexConsole());
         new_socket = accept(server_socket,(sockaddr*)&new_addr,&addr_size);
         if(new_socket == INVALID_SOCKET)
             continue;
+        WaitForSingleObject(this->getMutexConsole(),INFINITE);
         std::cout << "Connect " << "ip: " << inet_ntoa(new_addr.sin_addr)
         << " Socket: " << std::to_string(new_socket) 
         << " Date:" << HttpDate::getCurGmtTime().toStr() << std::endl;
-        std::wstring post_log = L"Connect " + fromUTF8(inet_ntoa(new_addr.sin_addr)) + L"\n";
+        ReleaseMutex(this->getMutexConsole());
+        std::wstring post_log = L"Connect " + fromUTF8(inet_ntoa(new_addr.sin_addr));
         this->WriteTolog(post_log);
         auto *params = new std::tuple<IHTTPServer*,SOCKET,in_addr>(this,new_socket,new_addr.sin_addr);
         PTP_WORK new_work = CreateThreadpoolWork(clientThread,params,th_pool_env.get());
