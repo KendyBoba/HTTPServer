@@ -136,9 +136,9 @@ std::shared_ptr<std::string> HTTPresponse::HTTPheader::toStr(){
     result->append(std::to_string(Status().first) + " " + Status().second);
     result->append("\r\n");
     for(const auto& el : Params())
-        result->append(el.first + ":" + el.second + "\r\n");
+        result->append(el.first + ": " + el.second + "\r\n");
     if(!cookie->empty()){
-        result->append("Set-Cookie:");
+        result->append("Set-Cookie: ");
         result->append(CookieToStr());
         result->append("\r\n");
     }

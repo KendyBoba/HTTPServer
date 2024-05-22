@@ -179,6 +179,7 @@ void HTTPServer::sendResponse(SOCKET s, const HTTPresponse &response)
 }
 void HTTPServer::work(SOCKET s,std::shared_ptr<HTTPrequest> req,in_addr ip)
 {
+    HMODULE dynamic_lib = NULL;
     WaitForSingleObject(this->getMutexConsole(),INFINITE);
     std::cout << "Request ip: " << inet_ntoa(ip) << " Method: " << HTTPrequest::HTTPheader::methodToStr(req->Header().Method())
      << " URL: " << *req->Header().Url().toStr() << std::endl;
@@ -203,7 +204,7 @@ void HTTPServer::work(SOCKET s,std::shared_ptr<HTTPrequest> req,in_addr ip)
     }
     if(postfix.empty() && settings.getDefaultPostfix() == ".dll"){
         abs_path += fromUTF8(settings.getDefaultPostfix());
-        response = *LoadDll(abs_path,req);
+        response = *LoadDll(abs_path,req,dynamic_lib);
         goto end;
     }else if(postfix.empty() && settings.getDefaultPostfix() != ".dll"){
         if(!settings.getAssociation().count(postfix)){
@@ -213,7 +214,7 @@ void HTTPServer::work(SOCKET s,std::shared_ptr<HTTPrequest> req,in_addr ip)
         response = *ExternalProcess(settings.getAssociation().find(postfix)->second,abs_path,req);
         goto end;
     }else if(postfix == ".dll"){
-        response = *LoadDll(abs_path,req);
+        response = *LoadDll(abs_path,req,dynamic_lib);
         goto end;
     }else if(settings.getAssociation().count(postfix)){
         response = *ExternalProcess(settings.getAssociation().find(postfix)->second,abs_path,req);
@@ -241,6 +242,8 @@ void HTTPServer::work(SOCKET s,std::shared_ptr<HTTPrequest> req,in_addr ip)
     HttpDate current_date_time = HttpDate::getCurGmtTime();
     response.Header().Params().insert(std::make_pair("Date",current_date_time.toStr()));
     sendResponse(s,response);
+    if(dynamic_lib != NULL)
+        FreeLibrary(dynamic_lib);
 }
 
 HANDLE HTTPServer::getMutexConsole()
@@ -405,22 +408,22 @@ std::shared_ptr<HTTPresponse> HTTPServer::POST(std::shared_ptr<HTTPrequest> req)
     return response;
 }
 
-std::shared_ptr<HTTPresponse> HTTPServer::LoadDll(std::wstring path,std::shared_ptr<HTTPrequest> req)
+std::shared_ptr<HTTPresponse> HTTPServer::LoadDll(std::wstring path,std::shared_ptr<HTTPrequest> req,HMODULE d_lib)
 {
     if(!isFileExist(path) && settings.getDefaultHandlerFile().empty())
         return makeErrorResponse(404,"Not Found");
     else if(!isFileExist(path))
         path = this->current_proj_path + L"\\" + settings.getDefaultHandlerFile();
-    HMODULE dynamic_lib = LoadLibraryW(path.c_str());
+    d_lib = LoadLibraryW(path.c_str());
     HTTPresponse (*external_logic)(HTTPrequest& req) = nullptr;
-    external_logic = (HTTPresponse (*)(HTTPrequest& req))GetProcAddress(dynamic_lib,"start");
+    external_logic = (HTTPresponse (*)(HTTPrequest& req))GetProcAddress(d_lib,"start");
     if(!external_logic){
-        FreeLibrary(dynamic_lib);
+        FreeLibrary(d_lib);
         return makeErrorResponse(500,"Internal Server Error");
     }
-    auto response = std::make_shared<HTTPresponse>(external_logic(*req));
-    FreeLibrary(dynamic_lib);
-    return response;
+    auto result = std::make_shared<HTTPresponse>();
+    *result = std::move(external_logic(*req));
+    return result;
 }
 
 size_t HTTPServer::getFileSize(const std::wstring &w_path)const{

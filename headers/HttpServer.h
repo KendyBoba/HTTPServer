@@ -44,7 +44,7 @@ private:
     std::shared_ptr<HTTPresponse> PUT(std::shared_ptr<HTTPrequest> req);
     std::shared_ptr<HTTPresponse> DEL(std::shared_ptr<HTTPrequest> req);
     std::shared_ptr<HTTPresponse> POST(std::shared_ptr<HTTPrequest> req);
-    std::shared_ptr<HTTPresponse> LoadDll(std::wstring path,std::shared_ptr<HTTPrequest> req);
+    std::shared_ptr<HTTPresponse> LoadDll(std::wstring path,std::shared_ptr<HTTPrequest> req,HMODULE d_lib);
     std::shared_ptr<HTTPresponse> ExternalProcess(std::wstring path_to_exe,const std::wstring path_file,std::shared_ptr<HTTPrequest> req);
     std::shared_ptr<std::string> FileReadAll(const std::wstring & path,size_t off = 0,size_t len = 0)const;
     void FileAppend(const std::wstring & path,const std::string &data);

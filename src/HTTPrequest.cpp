@@ -210,7 +210,7 @@ std::string HTTPrequest::HTTPheader::CookieToStr()const{
         if(!el.second.empty()){
             result.append("=" + el.second);
         }
-        result.append(";");
+        result.append("; ");
     }
     return result;
 }
@@ -224,12 +224,12 @@ std::shared_ptr<std::string> HTTPrequest::HTTPheader::toStr() const
     result->append(ss.str());
     for(const auto& el: *this->params){
         result->append(el.first);
-        result->append(":");
+        result->append(": ");
         result->append(el.second);
         result->append("\r\n");
     }
     if(!cookie->empty()){
-        result->append("Cookie:");
+        result->append("Cookie: ");
         result->append(CookieToStr());
         result->append("\r\n");
     }
