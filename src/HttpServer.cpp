@@ -187,7 +187,7 @@ void HTTPServer::work(SOCKET s,std::shared_ptr<HTTPrequest> req,in_addr ip)
     std::wstringstream wlog;
     wlog << L"Request: " << fromUTF8(inet_ntoa(ip)) << L" Method: "
      << fromUTF8(HTTPrequest::HTTPheader::methodToStr(req->Header().Method())) 
-     << " URL: " << fromUTF8(*req->Header().Url().toStr());
+     << " URL: " << urldecode(*req->Header().Url().toStr());
     this->WriteTolog(wlog.str());
     wlog.clear();
     HTTPresponse response;
@@ -259,7 +259,7 @@ HANDLE HTTPServer::getMutexLog()
 void HTTPServer::WriteTolog(const std::wstring str)
 {
     WaitForSingleObject(this->getMutexLog(),INFINITE);
-    std::string data = toUTF8(str) + " " + HttpDate::getCurGmtTime().toStr() + "\n";
+    std::string data = toUTF8(str) + " " + HttpDate::getCurGmtTime().toStr() + "\r\n";
     std::ofstream target_file(path_to_log_file.c_str(),std::ios::binary | std::ios::app);
     if(!target_file.is_open())
         throw std::runtime_error("file was not open");
