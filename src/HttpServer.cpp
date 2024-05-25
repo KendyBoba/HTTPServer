@@ -69,6 +69,11 @@ void CALLBACK clientThread(
         std::wstring post_log = L"Response: " + fromUTF8(inet_ntoa(client_ip)) + L" 400 " + L"Bad Request";
         serv->WriteTolog(post_log);
     }
+    catch(...){
+        serv->sendResponse(client_socket,*serv->makeErrorResponse(500,"Internal Server Error"));
+        std::wstring post_log = L"Response: " + fromUTF8(inet_ntoa(client_ip)) + L" 500 " + L"Internal Server Error";
+        serv->WriteTolog(post_log);
+    }
     shutdown(client_socket,SD_BOTH);
     closesocket(client_socket);
     delete p_temp_param;
