@@ -22,8 +22,9 @@ int main(){
     }
     catch(...){
         std::cout << "Unknown error\n";
-        std::wstring post_log = L"Error Unknown exeption\n";
+        std::wstring post_log = L"Error Unknown exeption";
         p_serv->WriteTolog(post_log);
+        return -1;
     }
     return 0;
 }
